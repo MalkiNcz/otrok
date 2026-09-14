@@ -1,0 +1,14 @@
+node_modules/
+**/node_modules/
+.env
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+npm-debug.log*
+logs/
+*.log
+.DS_Store
+.vscode/
+pm2.log
+dump.rdb

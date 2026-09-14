@@ -1,0 +1,98 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'moderation' }) %>
+    <div class="main">
+
+      <div class="card">
+        <h2>🔨 Ban</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/moderation/ban">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-row">
+            <div>
+              <label>ID uživatele</label>
+              <input type="text" name="userId" required placeholder="např. 123456789012345678">
+            </div>
+            <div>
+              <label>Smazat zprávy (dní, 0-7)</label>
+              <input type="number" name="deleteDays" min="0" max="7" value="0">
+            </div>
+          </div>
+          <label>Důvod</label>
+          <input type="text" name="reason" placeholder="Nepovinné">
+          <div style="margin-top:14px;"><button class="btn danger" type="submit">Zabanovat</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>👢 Kick</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/moderation/kick">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label>ID uživatele</label>
+          <input type="text" name="userId" required placeholder="např. 123456789012345678">
+          <label>Důvod</label>
+          <input type="text" name="reason" placeholder="Nepovinné">
+          <div style="margin-top:14px;"><button class="btn warning" type="submit">Vykopnout</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🔇 Mute (timeout)</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/moderation/mute">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-row">
+            <div>
+              <label>ID uživatele</label>
+              <input type="text" name="userId" required placeholder="např. 123456789012345678">
+            </div>
+            <div>
+              <label>Doba trvání</label>
+              <input type="text" name="durationInput" required placeholder="např. 10m, 1h, 1d">
+            </div>
+          </div>
+          <label>Důvod</label>
+          <input type="text" name="reason" placeholder="Nepovinné">
+          <div style="margin-top:14px;"><button class="btn warning" type="submit">Umlčet</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🔊 Unmute</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/moderation/unmute">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label>ID uživatele</label>
+          <input type="text" name="userId" required placeholder="např. 123456789012345678">
+          <div style="margin-top:14px;"><button class="btn secondary" type="submit">Zrušit umlčení</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🧹 Smazat zprávy (purge)</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/moderation/purge">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="form-row">
+            <div>
+              <label>Kanál</label>
+              <select name="channelId" required>
+                <option value="">— vyber kanál —</option>
+                <% channels.forEach(c => { %>
+                  <option value="<%= c.id %>">#<%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label>Počet zpráv (1-100)</label>
+              <input type="number" name="amount" min="1" max="100" value="10" required>
+            </div>
+          </div>
+          <p class="hint">Zprávy starší 14 dní nelze hromadně smazat (omezení Discordu).</p>
+          <div style="margin-top:14px;"><button class="btn danger" type="submit">Smazat zprávy</button></div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

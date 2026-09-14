@@ -1,0 +1,40 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'overview' }) %>
+    <div class="main">
+      <h1><%= guild.name %></h1>
+      <div class="grid">
+        <div class="stat"><div class="value"><%= guild.approximate_member_count ?? '—' %></div><div class="label">Členů celkem</div></div>
+        <div class="stat"><div class="value"><%= guild.approximate_presence_count ?? '—' %></div><div class="label">Online</div></div>
+        <div class="stat"><div class="value"><%= settings.welcome_enabled ? 'Zapnuto' : 'Vypnuto' %></div><div class="label">Uvítací zprávy</div></div>
+        <div class="stat"><div class="value"><%= settings.log_channel_id ? 'Nastaveno' : 'Nenastaveno' %></div><div class="label">Audit log</div></div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <h2>Poslední aktivita</h2>
+        <% if (!recent.length) { %>
+          <p class="hint">Zatím žádné záznamy.</p>
+        <% } else { %>
+        <table>
+          <thead><tr><th>Typ</th><th>Uživatel</th><th>Moderátor</th><th>Kdy</th></tr></thead>
+          <tbody>
+          <% recent.forEach(e => { %>
+            <tr>
+              <td><span class="badge"><%= e.type %></span></td>
+              <td><%= e.user_tag || '—' %></td>
+              <td><%= e.moderator_tag || '—' %></td>
+              <td><%= new Date(e.created_at).toLocaleString('cs-CZ') %></td>
+            </tr>
+          <% }) %>
+          </tbody>
+        </table>
+        <a class="btn small secondary" href="/dashboard/<%= guild.id %>/auditlog" style="margin-top:12px;">Zobrazit celou historii</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,10 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/nav') %>
+<div class="container narrow">
+  <div class="card" style="text-align:center; margin-top: 60px;">
+    <h2>⚠️ <%= title %></h2>
+    <p style="color: var(--text-muted)"><%= message %></p>
+    <a class="btn" href="/dashboard">Zpět na dashboard</a>
+  </div>
+</div>
+<%- include('partials/foot') %>

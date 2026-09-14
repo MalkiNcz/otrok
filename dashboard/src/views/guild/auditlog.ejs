@@ -1,0 +1,53 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'auditlog' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>🧾 Historie audit logu</h2>
+
+        <form method="get" style="margin-bottom:16px;">
+          <label for="type">Filtrovat podle typu</label>
+          <select id="type" name="type" onchange="this.form.submit()">
+            <option value="">Vše</option>
+            <% types.forEach(t => { %>
+              <option value="<%= t %>" <%= type === t ? 'selected' : '' %>><%= typeMeta[t].label %></option>
+            <% }) %>
+          </select>
+        </form>
+
+        <% if (!entries.length) { %>
+          <p class="hint">Žádné záznamy.</p>
+        <% } else { %>
+        <table>
+          <thead><tr><th>Typ</th><th>Uživatel</th><th>Moderátor</th><th>Důvod</th><th>Kdy</th></tr></thead>
+          <tbody>
+          <% entries.forEach(e => { %>
+            <tr>
+              <td><span class="badge"><%= typeMeta[e.type] ? typeMeta[e.type].label : e.type %></span></td>
+              <td><%= e.user_tag || '—' %></td>
+              <td><%= e.moderator_tag || '—' %></td>
+              <td><%= e.reason || '—' %></td>
+              <td><%= new Date(e.created_at).toLocaleString('cs-CZ') %></td>
+            </tr>
+          <% }) %>
+          </tbody>
+        </table>
+
+        <div class="pagination">
+          <% if (page > 1) { %>
+            <a class="btn small secondary" href="?page=<%= page - 1 %><%= type ? '&type='+type : '' %>">← Novější</a>
+          <% } %>
+          <span class="hint">Strana <%= page %> / <%= totalPages %></span>
+          <% if (page < totalPages) { %>
+            <a class="btn small secondary" href="?page=<%= page + 1 %><%= type ? '&type='+type : '' %>">Starší →</a>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

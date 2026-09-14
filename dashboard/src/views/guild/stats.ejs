@@ -1,0 +1,69 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'stats' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>🔢 Statistické kanály</h2>
+        <p class="hint">Název vybraného hlasového kanálu nebo kategorie se automaticky přejmenuje podle šablony. Discord dovoluje maximálně 2 přejmenování za 10 minut na kanál, proto se aktualizuje jednou za 10 minut.</p>
+
+        <% if (!statChannels.length) { %>
+          <p class="hint">Zatím žádné statistické kanály.</p>
+        <% } else { %>
+        <table>
+          <thead><tr><th>Kanál</th><th>Typ</th><th>Metrika</th><th>Šablona</th><th></th></tr></thead>
+          <tbody>
+          <% statChannels.forEach(sc => { %>
+            <tr>
+              <td><%= sc.channel_id %></td>
+              <td><%= sc.channel_type === 'category' ? 'Kategorie' : 'Hlasový kanál' %></td>
+              <td><%= sc.metric %></td>
+              <td><code><%= sc.template %></code></td>
+              <td>
+                <form method="post" action="/dashboard/<%= guild.id %>/stats/remove" style="margin:0;">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <input type="hidden" name="channelId" value="<%= sc.channel_id %>">
+                  <button class="btn danger small" type="submit">Odebrat</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+
+      <div class="card">
+        <h2>Přidat statistický kanál</h2>
+        <form method="post" action="/dashboard/<%= guild.id %>/stats/add">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <label for="channelId">Kanál nebo kategorie</label>
+          <select id="channelId" name="channelId" required>
+            <option value="">— vyber —</option>
+            <% channels.forEach(c => { %>
+              <option value="<%= c.id %>"><%= c.type === 4 ? '📁' : '🔊' %> <%= c.name %></option>
+            <% }) %>
+          </select>
+
+          <label for="metric">Metrika</label>
+          <select id="metric" name="metric">
+            <option value="members">Všichni členové</option>
+            <option value="humans">Jen lidé (bez botů)</option>
+            <option value="bots">Jen boti</option>
+          </select>
+
+          <label for="template">Šablona názvu (použij {count})</label>
+          <input type="text" id="template" name="template" value="👥 Členové: {count}">
+
+          <div style="margin-top:16px;">
+            <button class="btn" type="submit">Přidat</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

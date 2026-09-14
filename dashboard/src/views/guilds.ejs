@@ -1,0 +1,32 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/nav') %>
+<div class="container">
+  <h1>Tvé servery</h1>
+  <p style="color: var(--text-muted)">Servery, na kterých máš oprávnění "Spravovat server".</p>
+
+  <% if (!guilds.length) { %>
+    <div class="card">Nemáš žádné servery se správcovským oprávněním.</div>
+  <% } else { %>
+  <div class="guild-list">
+    <% guilds.forEach(g => { %>
+      <div class="guild-card">
+        <% if (g.iconUrl) { %>
+          <img src="<%= g.iconUrl %>" alt="">
+        <% } else { %>
+          <div class="icon-fallback"><%= g.name.slice(0,2).toUpperCase() %></div>
+        <% } %>
+        <div style="flex:1; min-width:0;">
+          <div class="name"><%= g.name %></div>
+          <div class="status"><%= g.botPresent ? '✅ Bot je na serveru' : '❌ Bot chybí' %></div>
+        </div>
+        <% if (g.botPresent) { %>
+          <a class="btn small" href="/dashboard/<%= g.id %>">Spravovat</a>
+        <% } else { %>
+          <a class="btn small secondary" target="_blank" rel="noopener" href="<%= inviteUrl %>&guild_id=<%= g.id %>">Pozvat</a>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+  <% } %>
+</div>
+<%- include('partials/foot') %>

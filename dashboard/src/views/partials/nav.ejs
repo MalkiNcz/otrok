@@ -1,0 +1,13 @@
+<div class="topbar">
+  <a class="brand" href="/dashboard">🤖 Otrok</a>
+  <% if (user) { %>
+  <div class="user">
+    <span><%= user.username %></span>
+    <img class="avatar" src="<%= user.avatarUrl %>" alt="avatar">
+    <form method="post" action="/auth/logout" style="margin:0">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn secondary small" type="submit">Odhlásit</button>
+    </form>
+  </div>
+  <% } %>
+</div>

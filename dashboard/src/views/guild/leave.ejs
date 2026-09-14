@@ -1,0 +1,38 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'leave' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>🚪 Zprávy o odchodu</h2>
+        <p class="hint">Placeholdery: <code>{username}</code>, <code>{server}</code>, <code>{membercount}</code></p>
+        <form method="post" action="/dashboard/<%= guild.id %>/leave">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled" name="enabled" <%= settings.leave_enabled ? 'checked' : '' %>>
+            <label for="enabled">Zapnuto</label>
+          </div>
+
+          <label for="channelId">Kanál</label>
+          <select id="channelId" name="channelId">
+            <option value="">— vyber kanál —</option>
+            <% channels.forEach(c => { %>
+              <option value="<%= c.id %>" <%= settings.leave_channel_id === c.id ? 'selected' : '' %>>#<%= c.name %></option>
+            <% }) %>
+          </select>
+
+          <label for="message">Text zprávy</label>
+          <textarea id="message" name="message" placeholder="<%= settings.leave_message %>"><%= settings.leave_message %></textarea>
+
+          <div style="margin-top:16px;">
+            <button class="btn" type="submit">Uložit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

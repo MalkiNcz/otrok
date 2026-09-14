@@ -1,0 +1,12 @@
+<div class="sidebar">
+  <a href="/dashboard/<%= guild.id %>" class="<%= active === 'overview' ? 'active' : '' %>">📊 Přehled</a>
+  <a href="/dashboard/<%= guild.id %>/welcome" class="<%= active === 'welcome' ? 'active' : '' %>">👋 Uvítání</a>
+  <a href="/dashboard/<%= guild.id %>/leave" class="<%= active === 'leave' ? 'active' : '' %>">🚪 Odchody</a>
+  <a href="/dashboard/<%= guild.id %>/rules" class="<%= active === 'rules' ? 'active' : '' %>">📜 Pravidla a role</a>
+  <a href="/dashboard/<%= guild.id %>/moderation" class="<%= active === 'moderation' ? 'active' : '' %>">🛡️ Moderace</a>
+  <a href="/dashboard/<%= guild.id %>/auditlog" class="<%= active === 'auditlog' ? 'active' : '' %>">🧾 Audit log</a>
+  <a href="/dashboard/<%= guild.id %>/logging" class="<%= active === 'logging' ? 'active' : '' %>">⚙️ Nastavení logu</a>
+  <a href="/dashboard/<%= guild.id %>/stats" class="<%= active === 'stats' ? 'active' : '' %>">🔢 Statistiky</a>
+  <hr style="border-color: var(--border); margin: 10px 0;">
+  <a href="/dashboard">← Zpět na servery</a>
+</div>

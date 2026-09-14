@@ -1,0 +1,65 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'rules' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>📜 Pravidla a přiřazení role</h2>
+        <p class="hint">Bot zveřejní zprávu s pravidly a tlačítkem. Klikem na tlačítko člen automaticky získá zvolenou roli.</p>
+        <form method="post" action="/dashboard/<%= guild.id %>/rules">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <div class="form-row">
+            <div>
+              <label for="channelId">Kanál</label>
+              <select id="channelId" name="channelId">
+                <option value="">— vyber kanál —</option>
+                <% channels.forEach(c => { %>
+                  <option value="<%= c.id %>" <%= rulesConfig.channel_id === c.id ? 'selected' : '' %>>#<%= c.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label for="roleId">Role po odsouhlasení</label>
+              <select id="roleId" name="roleId">
+                <option value="">— vyber roli —</option>
+                <% roles.forEach(r => { %>
+                  <option value="<%= r.id %>" <%= rulesConfig.role_id === r.id ? 'selected' : '' %>><%= r.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <label for="title">Nadpis</label>
+          <input type="text" id="title" name="title" value="<%= rulesConfig.title %>">
+
+          <label for="description">Text pravidel</label>
+          <textarea id="description" name="description"><%= rulesConfig.description %></textarea>
+
+          <label for="buttonLabel">Text tlačítka</label>
+          <input type="text" id="buttonLabel" name="buttonLabel" value="<%= rulesConfig.button_label %>">
+
+          <div style="margin-top:16px; display:flex; gap:10px;">
+            <button class="btn" type="submit">Uložit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Zveřejnění zprávy</h2>
+        <% if (rulesConfig.message_id) { %>
+          <p class="hint">Zpráva už byla zveřejněna (ID <%= rulesConfig.message_id %>). Tlačítkem níže ji nahradíš novou verzí (aktuální nastavení výše musí být uložené).</p>
+        <% } else { %>
+          <p class="hint">Zpráva zatím nebyla zveřejněna.</p>
+        <% } %>
+        <form method="post" action="/dashboard/<%= guild.id %>/rules/publish">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn" type="submit"><%= rulesConfig.message_id ? 'Zveřejnit znovu' : 'Zveřejnit zprávu' %></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

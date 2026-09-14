@@ -1,0 +1,30 @@
+{
+  "name": "otrok",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Otrok - multifunkční Discord bot s webovým dashboardem",
+  "workspaces": [
+    "shared",
+    "bot",
+    "dashboard"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "deploy:commands": "npm run deploy:commands --workspace=bot",
+    "start:bot": "npm run start --workspace=bot",
+    "start:dashboard": "npm run start --workspace=dashboard",
+    "dev:bot": "npm run dev --workspace=bot",
+    "dev:dashboard": "npm run dev --workspace=dashboard",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:restart": "pm2 restart ecosystem.config.js",
+    "pm2:stop": "pm2 stop ecosystem.config.js",
+    "pm2:logs": "pm2 logs"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "license": "MIT",
+  "allowScripts": {
+    "better-sqlite3@11.10.0": true
+  }
+}

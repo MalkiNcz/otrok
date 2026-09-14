@@ -1,0 +1,43 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'welcome' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>👋 Uvítací zprávy</h2>
+        <p class="hint">Placeholdery: <code>{user}</code> (zmínka), <code>{username}</code>, <code>{server}</code>, <code>{membercount}</code></p>
+        <form method="post" action="/dashboard/<%= guild.id %>/welcome">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled" name="enabled" <%= settings.welcome_enabled ? 'checked' : '' %>>
+            <label for="enabled">Zapnuto</label>
+          </div>
+
+          <label for="channelId">Kanál</label>
+          <select id="channelId" name="channelId">
+            <option value="">— vyber kanál —</option>
+            <% channels.forEach(c => { %>
+              <option value="<%= c.id %>" <%= settings.welcome_channel_id === c.id ? 'selected' : '' %>>#<%= c.name %></option>
+            <% }) %>
+          </select>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="useEmbed" name="useEmbed" <%= settings.welcome_use_embed ? 'checked' : '' %>>
+            <label for="useEmbed">Zobrazit jako embed (s avatarem)</label>
+          </div>
+
+          <label for="message">Text zprávy</label>
+          <textarea id="message" name="message" placeholder="<%= settings.welcome_message %>"><%= settings.welcome_message %></textarea>
+
+          <div style="margin-top:16px;">
+            <button class="btn" type="submit">Uložit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

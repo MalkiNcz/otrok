@@ -1,0 +1,49 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/nav') %>
+<div class="container">
+  <%- include('../partials/flash') %>
+  <div class="layout">
+    <%- include('../partials/guildnav', { guild, active: 'logging' }) %>
+    <div class="main">
+      <div class="card">
+        <h2>⚙️ Audit log</h2>
+        <p class="hint">Vyber kanál, kam se mají posílat záznamy o událostech, a zapni typy, které tě zajímají. Do databáze se ukládá vždy vše bez ohledu na zaškrtnutí - přepínače řídí jen posílání do Discord kanálu.</p>
+        <form method="post" action="/dashboard/<%= guild.id %>/logging">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+          <label for="channelId">Kanál pro audit log</label>
+          <select id="channelId" name="channelId">
+            <option value="">— vypnuto (nikam neposílat) —</option>
+            <% channels.forEach(c => { %>
+              <option value="<%= c.id %>" <%= settings.log_channel_id === c.id ? 'selected' : '' %>>#<%= c.name %></option>
+            <% }) %>
+          </select>
+
+          <div class="grid" style="margin-top:16px;">
+            <% const events = [
+              ['log_join', '📥 Připojení členů'],
+              ['log_leave', '📤 Odchody členů'],
+              ['log_ban', '🔨 Bany'],
+              ['log_kick', '👢 Kicky'],
+              ['log_mute', '🔇 Mute / unmute'],
+              ['log_voice', '🎙️ Voice připojení/odpojení'],
+              ['log_message_delete', '🗑️ Smazané zprávy'],
+              ['log_message_edit', '✏️ Upravené zprávy'],
+            ]; %>
+            <% events.forEach(([key, label]) => { %>
+              <div class="checkbox-row">
+                <input type="checkbox" id="<%= key %>" name="<%= key %>" <%= settings[key] ? 'checked' : '' %>>
+                <label for="<%= key %>"><%= label %></label>
+              </div>
+            <% }) %>
+          </div>
+
+          <div style="margin-top:16px;">
+            <button class="btn" type="submit">Uložit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

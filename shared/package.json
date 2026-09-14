@@ -1,0 +1,10 @@
+{
+  "name": "@otrok/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "dependencies": {
+    "better-sqlite3": "^13.0.0",
+    "dotenv": "^16.4.5"
+  }
+}

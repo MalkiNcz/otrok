@@ -203,9 +203,63 @@ Dashboard poběží na `http://localhost:3000` (nebo portu z `.env`). Oba přík
 
 ## 6. Nasazení na VPS (produkce)
 
-Návod počítá s čerstvým **Ubuntu/Debian** serverem a doménou nasměrovanou na jeho IP
-adresu (doména je potřeba kvůli HTTPS, které Discord OAuth2 pro produkční Redirect URI
-vyžaduje).
+Návod počítá s čerstvým **Ubuntu/Debian** serverem a doménou (nebo zdarma subdoménou,
+viz krok 6.0) nasměrovanou na jeho IP adresu (doména je potřeba kvůli HTTPS, které
+Discord OAuth2 pro produkční Redirect URI vyžaduje).
+
+### 6.0 (Doporučeno, zdarma navždy) Založení VPS na Oracle Cloud Free Tier
+
+Bot i dashboard běží podle tohoto návodu na jednom serveru, takže bohatě stačí i
+nejmenší instance. Oracle Cloud nabízí ve svém **Always Free** tieru ARM instance
+(Ampere A1, až 4 OCPU / 24 GB RAM celkem), které jsou zdarma trvale, ne jen po
+zkušební dobu.
+
+1. Přihlas se do [Oracle Cloud Console](https://cloud.oracle.com).
+2. V menu ☰ zvol **Compute → Instances** a klikni na **Create instance**.
+3. Zadej název, např. `otrok-vps`.
+4. V sekci **Image and shape** klikni na **Edit**:
+   - Image: **Canonical Ubuntu** (nejnovější 22.04/24.04 LTS).
+   - Shape: **Change shape → záložka Ampere → VM.Standard.A1.Flex** a nastav např.
+     2 OCPU / 12 GB RAM (v rámci Always Free limitu 4 OCPU / 24 GB klidně můžeš nechat
+     i celé 4/24 jen pro tuhle instanci).
+5. V sekci **Networking** nech vytvořit výchozí VCN a ověř, že je zaškrtnuté **Assign a
+   public IPv4 address**.
+6. V sekci **Add SSH keys** zvol **Generate a key pair for me** a **stáhni si privátní
+   klíč** (budeš ho potřebovat k připojení) - nebo vlož vlastní veřejný klíč, pokud už
+   nějaký máš.
+7. Boot volume můžeš nechat na výchozí hodnotě (Always Free dovoluje až 200 GB celkem).
+8. Klikni na **Create** a počkej, až stav instance přejde na **Running**. Zkopíruj si
+   její **Public IP Address**.
+
+> Pokud při vytváření dostaneš chybu **"Out of host capacity"**, je to běžné u Always
+> Free ARM instancí - zkus jinou Availability Domain, nebo to po chvíli zopakuj.
+
+Připojení po SSH (výchozí uživatel na Ubuntu images je `ubuntu`):
+
+```bash
+chmod 600 cesta/ke/stazenemu-klici.key
+ssh -i cesta/ke/stazenemu-klici.key ubuntu@VEREJNA_IP
+```
+
+**Nemáš vlastní doménu?** Nejjednodušší zdarma varianta je [DuckDNS](https://www.duckdns.org)
+- zdarma si tam vytvoříš subdoménu typu `tvuj-bot.duckdns.org` a namíříš ji na veřejnou
+IP své instance z kroku 8. Ve zbytku návodu pak všude místo `tvoje-domena.cz` použij
+tuto adresu.
+
+**Máš doménu na Cloudflare?** Nastav DNS záznam takto:
+
+1. V Cloudflare dashboardu otevři svou doménu → **DNS → Records → Add record**.
+2. Type: `A`, Name: zvol si subdoménu pro bota, např. `bot` (výsledná adresa bude
+   `bot.tvoje-domena.cz`) - nedoporučuje se používat root doménu, pokud na ní běží i
+   něco jiného. Content: veřejná IP adresa instance z kroku 8.
+3. **Proxy status: dočasně přepni na "DNS only" (šedý mráček), ne "Proxied"** - dokud
+   Certbot v kroku 6.5 nevystaví certifikát, musí ověřovací požadavek Let's Encryptu
+   dojít přímo na server. Po úspěšném vystavení certifikátu (krok 6.5) můžeš proxy zase
+   zapnout (oranžový mráček) - v Cloudflare pak přepni **SSL/TLS → Overview** na režim
+   **Full (strict)** (funguje, protože na serveru už běží platný Let's Encrypt
+   certifikát; režim "Flexible" by způsoboval smyčku přesměrování).
+4. Ve zbytku návodu všude místo `tvoje-domena.cz` použij `bot.tvoje-domena.cz` (nebo
+   jakoukoliv subdoménu, kterou sis zvolil).
 
 ### 6.1 Příprava serveru
 
@@ -323,6 +377,25 @@ sudo ufw enable
 
 Port `DASHBOARD_PORT` (3000) zůstává dostupný jen lokálně (přes Nginx proxy), není
 potřeba ho otvírat navenek.
+
+> **Používáš Oracle Cloud?** Je potřeba povolit provoz na **dvou místech**, jinak se na
+> port 80/443 zvenku nedostaneš, i když `ufw` výše nastavíš správně:
+>
+> 1. **Cloud firewall (Security List)** - v konzoli jdi na **Networking → Virtual Cloud
+>    Networks → (tvoje VCN) → Security Lists → Default Security List** a přidej
+>    **Ingress Rules** pro `0.0.0.0/0`, TCP, port `80` a zvlášť port `443` (port 22 tam
+>    už zpravidla je).
+> 2. **iptables na samotném serveru** - Ubuntu image na Oracle má ve výchozím stavu
+>    předinstalovaná vlastní iptables pravidla nezávislá na `ufw`, která provoz mimo
+>    port 22 blokují. Nejjednodušší řešení je nechat správu firewallu čistě na `ufw`:
+>    ```bash
+>    sudo iptables -P INPUT ACCEPT
+>    sudo iptables -P FORWARD ACCEPT
+>    sudo iptables -P OUTPUT ACCEPT
+>    sudo iptables -F
+>    sudo netfilter-persistent save
+>    ```
+>    Až poté spusť příkazy `ufw` výše.
 
 Po dokončení je dashboard dostupný na `https://tvoje-domena.cz` a bot běží nepřetržitě
 na pozadí spravovaný PM2.
